@@ -1,0 +1,230 @@
+/* pages/ai-chat/ai-chat.wxss */
+.container {
+  height: 100vh;
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 32rpx 40rpx;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 8rpx;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 32rpx;
+  top: 60rpx;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 10rpx 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+  border-radius: 30rpx;
+}
+
+.chat-list {
+  flex: 1;
+  padding: 32rpx;
+  padding-right: calc(32rpx + 10rpx);
+  box-sizing: border-box;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message-item {
+  display: flex;
+  margin-bottom: 32rpx;
+  align-items: flex-start;
+}
+
+.message-item.user {
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.message-item.user .message-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.message-item.assistant .message-avatar {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.avatar-icon {
+  font-size: 40rpx;
+}
+
+.avatar-image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.message-content {
+  max-width: 70%;
+  margin: 0 20rpx;
+}
+
+.message-bubble {
+  padding: 24rpx 32rpx;
+  border-radius: 24rpx;
+  position: relative;
+}
+
+.message-bubble.user {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border-bottom-right-radius: 8rpx;
+}
+
+.message-bubble.assistant {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-bottom-left-radius: 8rpx;
+  box-shadow: var(--shadow-sm);
+}
+
+.message-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 思考内容样式 - 灰色小字 */
+.think-content {
+  margin-bottom: 12rpx;
+  padding: 16rpx 24rpx;
+  background: rgba(153, 153, 153, 0.1);
+  border-radius: 16rpx;
+  border-left: 4rpx solid #999;
+}
+
+.think-text {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.message-bubble.loading {
+  padding: 28rpx 40rpx;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 8rpx;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.list-bottom {
+  height: 32rpx;
+}
+
+.input-area {
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: var(--bg-card);
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-main);
+  border-radius: 48rpx;
+  padding: 16rpx 16rpx 16rpx 32rpx;
+  border: 2rpx solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--primary-light);
+}
+
+.chat-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  padding: 8rpx 0;
+}
+
+.input-placeholder {
+  color: var(--text-muted);
+  font-size: 28rpx;
+}
+
+.send-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.send-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.send-icon {
+  font-size: 32rpx;
+  color: var(--text-muted);
+}
+
+.send-btn.active .send-icon {
+  color: #ffffff;
+}

@@ -1,0 +1,32 @@
+<!-- pages/login/login.wxml -->
+<view class="container">
+  <view class="login-form">
+    <text class="title">Todo 应用登录</text>
+    
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <input style="width: 499rpx; display: block; box-sizing: border-box" 
+        class="input" 
+        placeholder="请输入用户名" 
+        value="{{username}}" 
+        bindinput="handleUsernameInput"
+      />
+    </view>
+    
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input style="width: 499rpx; display: block; box-sizing: border-box" 
+        class="input" 
+        placeholder="请输入密码" 
+        value="{{password}}" 
+        bindinput="handlePasswordInput"
+        password
+      />
+    </view>
+    
+    <button class="login-btn" bindtap="handleLogin">登录</button>
+    <button class="register-btn" bindtap="handleRegister">注册</button>
+    
+    <text class="error-message" wx:if="{{errorMessage}}">{{errorMessage}}</text>
+  </view>
+</view>

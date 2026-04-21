@@ -1,0 +1,74 @@
+<!-- pages/ai-chat/ai-chat.wxml -->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-title">AI 助手</view>
+    <view class="header-subtitle">随时为你效劳</view>
+    <view class="clear-btn" bindtap="onClearChat">清空</view>
+  </view>
+
+  <!-- 聊天消息列表 -->
+  <scroll-view
+    class="chat-list"
+    scroll-y
+    scroll-top="{{scrollTop}}"
+    scroll-with-animation
+    enhanced
+    bounces="{{false}}"
+    show-scrollbar="{{false}}"
+  >
+    <view wx:for="{{messages}}" wx:key="id" class="message-item {{item.role}}">
+      <view class="message-avatar">
+        <image wx:if="{{item.role === 'user' && userAvatar !== '👤'}}" class="avatar-image" src="{{userAvatar}}" mode="aspectFill" />
+        <text wx:else class="avatar-icon">{{item.role === 'user' ? '👤' : '🤖'}}</text>
+      </view>
+      <view class="message-content">
+        <!-- 显示思考内容（灰色小字） -->
+        <view wx:if="{{item.thinkContent}}" class="think-content">
+          <text class="think-text">💭 {{item.thinkContent}}</text>
+        </view>
+        <view class="message-bubble {{item.role}}">
+          <text class="message-text">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载指示器 -->
+    <view wx:if="{{isLoading}}" class="message-item assistant">
+      <view class="message-avatar">
+        <text class="avatar-icon">🤖</text>
+      </view>
+      <view class="message-content">
+        <view class="message-bubble assistant loading">
+          <view class="loading-dots">
+            <view class="dot"></view>
+            <view class="dot"></view>
+            <view class="dot"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部锚点 -->
+    <view id="bottom"></view>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-area">
+    <view class="input-wrapper">
+      <input
+        class="chat-input"
+        type="text"
+        placeholder="输入消息..."
+        placeholder-class="input-placeholder"
+        value="{{inputText}}"
+        bindinput="onInputChange"
+        bindconfirm="onSendMessage"
+        confirm-type="send"
+      />
+      <view class="send-btn {{inputText.trim() ? 'active' : ''}}" bindtap="onSendMessage">
+        <text class="send-icon">➤</text>
+      </view>
+    </view>
+  </view>
+</view>

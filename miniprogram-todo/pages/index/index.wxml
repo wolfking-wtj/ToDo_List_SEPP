@@ -1,0 +1,328 @@
+<!-- pages/index/index.wxml - 主页面模板 -->
+<view class="container">
+
+  <!-- ===== 头部统计卡片 ===== -->
+  <view class="header-card">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="header-top">
+        <view>
+          <view class="header-greeting">我的任务清单</view>
+          <view class="header-sub">让每天都更有掌控感</view>
+        </view>
+        <view class="header-icon">📋</view>
+      </view>
+
+      <!-- 进度条 -->
+      <view class="progress-section">
+        <view class="progress-info">
+          <text class="progress-label">完成进度</text>
+          <text class="progress-value">{{stats.completed}}/{{stats.total}}</text>
+        </view>
+        <view class="progress-bar-wrap">
+          <view class="progress-bar-track">
+            <view
+              class="progress-bar-fill"
+              style="width: {{stats.percent}}%"
+            ></view>
+          </view>
+          <text class="progress-percent">{{stats.percent}}%</text>
+        </view>
+      </view>
+
+      <!-- 统计数字 -->
+      <view class="stats-row">
+        <view class="stat-item stat-pending">
+          <text class="stat-num">{{stats.pending}}</text>
+          <text class="stat-label">待完成</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item stat-done">
+          <text class="stat-num">{{stats.completed}}</text>
+          <text class="stat-label">已完成</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item stat-total">
+          <text class="stat-num">{{stats.total}}</text>
+          <text class="stat-label">全部</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 搜索栏 ===== -->
+  <view class="search-bar">
+    <view class="search-inner">
+      <text class="search-icon-text">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索任务..."
+        placeholder-class="search-placeholder"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+      <view
+        class="search-clear {{searchKeyword ? 'show' : ''}}"
+        bindtap="onSearchClear"
+      >✕</view>
+    </view>
+  </view>
+
+  <!-- ===== 筛选标签 ===== -->
+  <view class="filter-tabs">
+    <view
+      wx:for="{{filterTabs}}"
+      wx:key="key"
+      class="filter-tab {{filter === item.key ? 'active' : ''}}"
+      bindtap="onFilterChange"
+      data-key="{{item.key}}"
+    >
+      {{item.label}}
+      <view wx:if="{{filter === item.key}}" class="tab-indicator"></view>
+    </view>
+
+    <!-- 清除完成按钮 -->
+    <view
+      class="clear-btn {{stats.completed > 0 ? 'show' : ''}}"
+      bindtap="onClearCompleted"
+    >
+      <text>🗑️</text>
+    </view>
+  </view>
+
+  <!-- ===== 排序选项 ===== -->
+  <view class="sort-options">
+    <view class="sort-label">排序方式</view>
+    <view class="sort-buttons">
+      <view
+        wx:for="{{sortOptions}}"
+        wx:key="key"
+        class="sort-button {{sortBy === item.key ? 'active' : ''}}"
+        bindtap="onSortChange"
+        data-key="{{item.key}}"
+      >
+        <text class="sort-icon">{{item.icon}}</text>
+        <text class="sort-text">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== Todo 列表 ===== -->
+  <view class="todo-list">
+
+    <!-- 空状态 -->
+    <view wx:if="{{filteredTodos.length === 0}}" class="empty-state">
+      <text class="empty-icon">
+        {{searchKeyword ? '🔍' : (filter === 'completed' ? '🎊' : '✨')}}
+      </text>
+      <text class="empty-text">
+        {{searchKeyword ? '没有匹配的任务' : (filter === 'completed' ? '还没有完成任务，加油！' : '暂无任务，点击 + 开始添加')}}
+      </text>
+    </view>
+
+    <!-- Todo 项目 -->
+    <view
+      wx:for="{{filteredTodos}}"
+      wx:key="id"
+      class="todo-item {{item.completed ? 'completed' : ''}}"
+      style="animation-delay: {{index * 50}}ms"
+    >
+      <!-- 左：勾选按钮 -->
+      <view
+        class="check-btn {{item.completed ? 'checked' : ''}} {{animatingIds.indexOf(item.id) !== -1 ? 'bouncing' : ''}}"
+        catchtap="onToggleTodo"
+        data-id="{{item.id}}"
+      >
+        <text wx:if="{{item.completed}}" class="check-icon">✓</text>
+      </view>
+
+      <!-- 中：内容区域（点击进详情） -->
+      <view class="todo-content" bindtap="onTapDetail" data-id="{{item.id}}">
+        <view class="todo-title {{item.completed ? 'line-through' : ''}}">{{item.title}}</view>
+        <view wx:if="{{item.desc}}" class="todo-desc">{{item.desc}}</view>
+        <view class="todo-meta">
+          <view
+            class="priority-tag"
+            style="color: {{item.priorityConfig.color}}; background: {{item.priorityConfig.bg}}"
+          >
+            {{item.priorityConfig.icon}} {{item.priorityConfig.label}}
+          </view>
+          <view class="todo-time-info">
+            <text class="todo-time">{{item.formattedTime}}</text>
+            <text wx:if="{{item.formattedDeadline}}" class="todo-deadline">⏰ {{item.formattedDeadline}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 右：操作按钮 -->
+      <view class="todo-actions">
+        <view class="action-btn edit-btn" catchtap="onEditTodo" data-id="{{item.id}}">✏️</view>
+        <view class="action-btn delete-btn" catchtap="onDeleteTodo" data-id="{{item.id}}">🗑️</view>
+      </view>
+    </view>
+
+  </view>
+
+  <!-- 底部留白（防止被 FAB 遮挡）-->
+  <view style="height: 160rpx;"></view>
+</view>
+
+<!-- ===== 浮动添加按钮 ===== -->
+<view class="fab" bindtap="onShowAddModal" style="position: fixed; left: 600rpx; top: 1200rpx">
+  <text class="fab-icon">+</text>
+</view>
+
+<!-- ===== 新增/编辑弹窗 ===== -->
+<view wx:if="{{showAddModal}}" class="modal-overlay" bindtap="onCloseModal">
+    <view class="modal-card" catchtap>
+
+    <view class="modal-header">
+      <text class="modal-title">{{formMode === 'add' ? '✨ 添加任务' : '✏️ 编辑任务'}}</text>
+      <view class="modal-close" bindtap="onCloseModal">✕</view>
+    </view>
+
+    <!-- 标题输入 -->
+    <view class="form-group">
+      <text class="form-label">任务标题 <text class="required">*</text></text>
+      <input
+        class="form-input {{formError ? 'error' : ''}}"
+        placeholder="输入任务标题（最多 50 字）"
+        placeholder-class="input-placeholder"
+        value="{{formData.title}}"
+        maxlength="50"
+        bindinput="onFormTitleInput"
+        focus="{{showAddModal}}"
+      />
+      <view wx:if="{{formError}}" class="form-error">⚠️ {{formError}}</view>
+    </view>
+
+    <!-- 描述输入 -->
+    <view class="form-group">
+      <text class="form-label">任务描述（选填）</text>
+      <textarea
+        class="form-textarea"
+        placeholder="补充说明..."
+        placeholder-class="input-placeholder"
+        value="{{formData.desc}}"
+        maxlength="200"
+        bindinput="onFormDescInput"
+        auto-height
+      />
+    </view>
+
+    <!-- 优先级选择 -->
+    <view class="form-group">
+      <text class="form-label">优先级</text>
+      <view class="priority-selector">
+        <view
+          wx:for="{{priorityOptions}}"
+          wx:key="key"
+          class="priority-option {{formData.priority === item.key ? 'selected' : ''}}"
+          style="{{formData.priority === item.key ? 'border-color:' + item.color + '; color:' + item.color : ''}}"
+          bindtap="onSelectPriority"
+          data-key="{{item.key}}"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 截至时间选择 -->
+    <view class="form-group">
+      <text class="form-label">截至时间（选填）</text>
+      <view class="deadline-selector">
+        <view class="deadline-input" bindtap="showDeadlinePicker">
+          <text class="deadline-icon">⏰</text>
+          <text class="deadline-text">{{formData.deadline ? formattedDeadline : '点击选择时间'}}</text>
+        </view>
+        <view
+          wx:if="{{formData.deadline}}"
+          class="deadline-clear"
+          bindtap="onClearDeadline"
+        >
+          <text>✕</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自定义日期时间选择器 -->
+    <view wx:if="{{showCustomPicker}}" class="custom-picker-modal">
+      <view class="custom-picker-container">
+        <view class="custom-picker-header">
+          <text class="custom-picker-title">选择截至时间</text>
+          <view class="custom-picker-actions">
+            <text class="custom-picker-btn cancel" bindtap="cancelDeadlinePicker">取消</text>
+            <text class="custom-picker-btn confirm" bindtap="confirmDeadlinePicker">确认</text>
+          </view>
+        </view>
+        <view class="custom-picker-content">
+          <!-- 日期选择 -->
+          <view class="picker-section">
+            <text class="section-title">日期</text>
+            <view class="date-picker-grid">
+              <view class="picker-column">
+                <text wx:for="{{years}}" wx:key="year" 
+                  class="picker-item {{selectedYear === item ? 'active' : ''}}"
+                  bindtap="selectYear" data-year="{{item}}"
+                >{{item}}</text>
+              </view>
+              <view class="picker-column">
+                <text wx:for="{{months}}" wx:key="month" 
+                  class="picker-item {{selectedMonth === item ? 'active' : ''}}"
+                  bindtap="selectMonth" data-month="{{item}}"
+                >{{item}}月</text>
+              </view>
+              <view class="picker-column">
+                <text wx:for="{{days}}" wx:key="day" 
+                  class="picker-item {{selectedDay === item ? 'active' : ''}}"
+                  bindtap="selectDay" data-day="{{item}}"
+                >{{item}}日</text>
+              </view>
+            </view>
+          </view>
+          <!-- 时间选择 -->
+          <view class="picker-section">
+            <text class="section-title">时间</text>
+            <view class="time-picker-grid">
+              <view class="picker-column">
+                <text wx:for="{{hours}}" wx:key="hour" 
+                  class="picker-item {{selectedHour === item ? 'active' : ''}}"
+                  bindtap="selectHour" data-hour="{{item}}"
+                >{{item < 10 ? '0' + item : item}}</text>
+              </view>
+              <view class="picker-column separator">
+                <text class="separator-text">:</text>
+              </view>
+              <view class="picker-column">
+                <text wx:for="{{minutes}}" wx:key="minute" 
+                  class="picker-item {{selectedMinute === item ? 'active' : ''}}"
+                  bindtap="selectMinute" data-minute="{{item}}"
+                >{{item < 10 ? '0' + item : item}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="modal-footer">
+      <view class="btn-cancel" bindtap="onCloseModal">取消</view>
+      <view class="btn-submit" bindtap="onSubmitForm">
+        {{formMode === 'add' ? '添加任务' : '保存更改'}}
+      </view>
+    </view>
+
+  </view>
+</view>
+
+<!-- ===== 删除确认弹窗 ===== -->
+<view wx:if="{{showDeleteConfirm}}" class="modal-overlay" bindtap="onCancelDelete">
+  <view class="confirm-card" catchtap>
+    <text class="confirm-icon">🗑️</text>
+    <text class="confirm-title">确认删除？</text>
+    <text class="confirm-desc">此操作不可恢复，确定要删除这条任务吗？</text>
+    <view class="confirm-btns">
+      <view class="btn-cancel" bindtap="onCancelDelete">取消</view>
+      <view class="btn-danger" bindtap="onConfirmDelete">确认删除</view>
+    </view>
+  </view>
+</view>

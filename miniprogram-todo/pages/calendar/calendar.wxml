@@ -1,0 +1,60 @@
+<!-- pages/calendar/calendar.wxml -->
+<view class="container">
+  <view class="calendar-header">
+    <view class="month-nav">
+      <view class="nav-btn" bindtap="onPrevMonth">
+        <text class="nav-icon">‹</text>
+      </view>
+      <view class="month-info">
+        <text class="year">{{calendarData.year}}</text>
+        <text class="month">{{calendarData.month}}月</text>
+      </view>
+      <view class="nav-btn" bindtap="onNextMonth">
+        <text class="nav-icon">›</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="calendar-weekdays">
+    <view class="weekday">日</view>
+    <view class="weekday">一</view>
+    <view class="weekday">二</view>
+    <view class="weekday">三</view>
+    <view class="weekday">四</view>
+    <view class="weekday">五</view>
+    <view class="weekday">六</view>
+  </view>
+
+  <view class="calendar-days">
+    <view
+      wx:for="{{calendarData.days}}"
+      wx:key="index"
+      class="calendar-day {{item.isEmpty ? 'empty' : ''}} {{item.isToday ? 'today' : ''}} {{item.intensity > 0 ? 'intensity-' + item.intensity : ''}}"
+      bindtap="onTapDate"
+      data-day="{{item.day}}"
+      data-completed-count="{{item.completedCount}}"
+    >
+      <text class="day-number">{{item.day}}</text>
+      <text wx:if="{{item.completedCount > 0}}" class="task-count">{{item.completedCount}}</text>
+    </view>
+  </view>
+
+  <view class="task-section">
+    <view class="section-title">今日任务</view>
+    <view wx:if="{{todayTasks.length === 0}}" class="empty-task">
+      <text class="empty-icon">📅</text>
+      <text class="empty-text">暂无任务</text>
+    </view>
+    <view wx:else class="task-list">
+      <view wx:for="{{todayTasks}}" wx:key="{{item.id}}" class="task-item {{item.completed ? 'completed' : ''}}">
+        <view class="task-content">
+          <text class="task-title">{{item.title}}</text>
+          <text class="task-desc">{{item.desc || '无描述'}}</text>
+        </view>
+        <view class="task-status">
+          <text class="status-icon">{{item.completed ? '✅' : '⏳'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

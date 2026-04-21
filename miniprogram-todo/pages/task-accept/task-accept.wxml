@@ -1,0 +1,61 @@
+<!-- pages/task-accept/task-accept.wxml -->
+<view class="container">
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <text class="loading-icon">⏳</text>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 任务列表 -->
+  <view wx:if="{{!loading && tasks.length > 0}}" class="tasks-container">
+    <view wx:for="{{tasks}}" wx:key="id" class="task-item">
+      <!-- 任务卡片 -->
+      <view class="task-card">
+        <!-- 发布者信息 -->
+        <view class="sender-info" wx:if="{{item.sender}}">
+          <view class="sender-avatar">
+            <image wx:if="{{userAvatarMap[item.sender.id]}}" class="avatar-img" src="{{userAvatarMap[item.sender.id]}}" mode="aspectFill" />
+            <text wx:else class="avatar-icon">👤</text>
+          </view>
+          <view class="sender-detail">
+            <text class="sender-name">{{item.sender.name || item.sender.username}}</text>
+            <text class="sender-time">{{item.formattedCreatedAt}}</text>
+          </view>
+        </view>
+
+        <view class="task-header">
+          <view class="task-title">{{item.title}}</view>
+          <view class="task-status">待接收</view>
+        </view>
+
+        <view class="task-desc" wx:if="{{item.description}}">
+          {{item.description}}
+        </view>
+        <view wx:else class="task-desc no-desc">暂无描述</view>
+
+        <view class="task-meta">
+          <view class="meta-item" wx:if="{{item.dueDate}}">
+            <text class="meta-icon">📅</text>
+            <view>
+              <text class="meta-label">截至时间</text>
+              <text class="meta-value">{{item.formattedDeadline}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-section">
+        <view class="action-card accept-btn" bindtap="onAccept" data-task-id="{{item.id}}">
+          <text class="action-card-icon">✅</text>
+          <text class="action-card-label">接收任务</text>
+        </view>
+
+        <view class="action-card reject-btn" bindtap="onReject" data-task-id="{{item.id}}">
+          <text class="action-card-icon">❌</text>
+          <text class="action-card-label">拒绝任务</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

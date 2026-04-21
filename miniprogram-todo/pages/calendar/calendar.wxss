@@ -1,0 +1,247 @@
+/* pages/calendar/calendar.wxss */
+.container {
+  min-height: 100vh;
+  background: var(--bg-main);
+  padding: 32rpx 32rpx 200rpx;
+}
+
+.calendar-header {
+  margin-bottom: 32rpx;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24rpx 32rpx;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  transition: all 0.2s ease;
+}
+
+.nav-btn:active {
+  transform: scale(0.9);
+  background: var(--primary-light);
+}
+
+.nav-icon {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.month-info {
+  text-align: center;
+}
+
+.year {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.month {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4rpx;
+  display: block;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.weekday {
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8rpx;
+  margin-bottom: 40rpx;
+}
+
+.calendar-day {
+  height: 80rpx;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar-day:active {
+  transform: scale(0.95);
+  background: var(--primary-light);
+}
+
+.calendar-day.empty {
+  background: transparent;
+  box-shadow: none;
+}
+
+.calendar-day.today {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+}
+
+/* 热力图颜色 */
+.calendar-day.intensity-1 {
+  background: #bbf7d0;
+}
+
+.calendar-day.intensity-2 {
+  background: #86efac;
+}
+
+.calendar-day.intensity-3 {
+  background: #4ade80;
+}
+
+.calendar-day.intensity-4 {
+  background: #22c55e;
+}
+
+.day-number {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.calendar-day.today .day-number {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 任务数量显示 */
+.task-count {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #16a34a;
+  margin-top: 4rpx;
+}
+
+.task-section {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24rpx;
+}
+
+.empty-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 20rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* 任务列表样式 */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  background: var(--bg-main);
+  border-radius: var(--radius-md);
+  border-left: 4rpx solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.task-item:active {
+  transform: scale(0.98);
+  background: var(--primary-light);
+}
+
+.task-item.completed {
+  border-left-color: var(--success);
+  opacity: 0.8;
+}
+
+.task-content {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.task-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-desc {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  display: block;
+  line-height: 1.4;
+}
+
+.task-item.completed .task-desc {
+  color: var(--text-muted);
+}
+
+.task-status {
+  flex-shrink: 0;
+}
+
+.status-icon {
+  font-size: 32rpx;
+}

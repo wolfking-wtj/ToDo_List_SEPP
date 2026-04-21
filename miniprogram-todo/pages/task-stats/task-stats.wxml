@@ -1,0 +1,109 @@
+<!-- pages/task-stats/task-stats.wxml -->
+<view class="container">
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-header">
+      <text class="stats-title">📊 任务统计</text>
+      <text class="stats-date">{{currentDate}}</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stat-item stat-total">
+        <text class="stat-number">{{stats.total}}</text>
+        <text class="stat-label">全部任务</text>
+      </view>
+      <view class="stat-item stat-completed">
+        <text class="stat-number">{{stats.completed}}</text>
+        <text class="stat-label">已完成</text>
+      </view>
+      <view class="stat-item stat-pending">
+        <text class="stat-number">{{stats.pending}}</text>
+        <text class="stat-label">待完成</text>
+      </view>
+      <view class="stat-item stat-completion">
+        <text class="stat-number">{{stats.percent}}%</text>
+        <text class="stat-label">完成率</text>
+      </view>
+    </view>
+    
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{stats.percent}}%"></view>
+    </view>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view
+      wx:for="{{filterTabs}}"
+      wx:key="key"
+      class="filter-tab {{filter === item.key ? 'active' : ''}}"
+      bindtap="onFilterChange"
+      data-key="{{item.key}}"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="todo-list">
+    <!-- 空状态 -->
+    <view wx:if="{{filteredTodos.length === 0}}" class="empty-state">
+      <text class="empty-icon">✨</text>
+      <text class="empty-text">暂无任务</text>
+    </view>
+
+    <!-- 任务项目 -->
+    <view wx:for="{{filteredTodos}}" wx:key="id" class="todo-item">
+      <!-- 任务状态图标 -->
+      <view class="todo-status">
+        <text wx:if="{{item.completed}}" class="status-icon completed">✓</text>
+        <text wx:else class="status-icon pending">○</text>
+      </view>
+
+      <!-- 任务信息 -->
+      <view class="todo-info" bindtap="onTapTodo" data-todo="{{item}}">
+        <view class="todo-title {{item.completed ? 'completed' : ''}} {{item.isDeleted ? 'deleted' : ''}}">{{item.title}}</view>
+        <view wx:if="{{item.desc}}" class="todo-desc {{item.isDeleted ? 'deleted' : ''}}">{{item.desc}}</view>
+        <view class="todo-meta">
+          <view
+            class="priority-tag"
+            style="color: {{item.priorityConfig.color}}; background: {{item.priorityConfig.bg}}"
+          >
+            {{item.priorityConfig.icon}} {{item.priorityConfig.label}}
+          </view>
+          <view class="todo-time">
+            <text class="time-icon">⏰</text>
+            <text>{{item.formattedTime}}</text>
+          </view>
+          <view wx:if="{{item.formattedDeadline}}" class="todo-deadline">
+            <text class="deadline-icon">📅</text>
+            <text>{{item.formattedDeadline}}</text>
+          </view>
+          <view wx:if="{{item.isDeleted}}" class="todo-deleted">
+            <text class="deleted-icon">🗑️</text>
+            <text>已删除</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="todo-actions">
+        <view
+          class="action-btn"
+          catchtap="onToggleTodo"
+          data-id="{{item.id}}"
+          data-status="{{item.completed}}"
+        >
+          <text class="action-icon">{{item.completed ? '↩️' : '✓'}}</text>
+        </view>
+        <view
+          class="action-btn delete-btn"
+          catchtap="onDeleteTodo"
+          data-id="{{item.id}}"
+        >
+          <text class="action-icon">🗑️</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "我的待办",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f0f2f8",
+  "backgroundTextStyle": "dark",
+  "usingComponents": {}
+}

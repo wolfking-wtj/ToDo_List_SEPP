@@ -1,0 +1,306 @@
+<!-- pages/friends/friends.wxml -->
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-inner">
+      <text class="search-icon-text">🔍</text>
+      <input
+        class="search-input"
+        placeholder="搜索好友..."
+        placeholder-class="search-placeholder"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+      <view
+        class="search-clear {{searchKeyword ? 'show' : ''}}"
+        bindtap="onSearchClear"
+      >✕</view>
+    </view>
+  </view>
+
+  <!-- 好友列表 -->
+  <view class="friends-list">
+    <!-- 待接收任务提示 -->
+    <view wx:if="{{pendingTasks.length > 0}}" class="pending-tasks-tip">
+      <text class="tip-icon">🔔</text>
+      <text class="tip-text">有 {{pendingTasks.length}} 个待接收的任务</text>
+      <view class="view-btn" bindtap="onViewPendingTasks">查看</view>
+    </view>
+
+    <view wx:for="{{friends}}" wx:key="id" class="friend-item" bindtap="onTapFriend" data-id="{{item.id}}">
+      <view class="friend-avatar">
+        <image wx:if="{{item.avatar && item.avatar !== '👨' && item.avatar !== '👩' && item.avatar !== '' && item.avatar !== null}}" class="avatar-image" src="{{item.avatar}}" mode="aspectFill" />
+        <text wx:else class="avatar-icon">👤</text>
+      </view>
+      <view class="friend-info">
+        <view class="friend-name">{{item.name || item.username}}</view>
+        <view class="friend-status">完成任务: {{item.completedTasks || 0}} / {{item.totalTasks || 0}}</view>
+      </view>
+      <view class="friend-action">
+        <view class="task-btn" catchtap="onPostTask" data-friend="{{item}}">
+          <text class="action-icon">📤</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 热力图弹窗 -->
+  <view wx:if="{{showHeatmap}}" class="heatmap-modal" bindtap="onCloseHeatmap">
+    <view class="heatmap-content">
+      <view class="heatmap-header">
+        <view class="heatmap-title">
+          <image wx:if="{{selectedHeatmap && selectedHeatmap.friendAvatar}}" class="heatmap-avatar" src="{{selectedHeatmap.friendAvatar}}" mode="aspectFill" />
+          <text wx:else class="heatmap-avatar-icon">👤</text>
+          <text class="heatmap-name">{{(selectedHeatmap && selectedHeatmap.friendName) || '好友'}}</text>
+        </view>
+        <view class="heatmap-close" bindtap="onCloseHeatmap">✕</view>
+      </view>
+
+      <view class="heatmap-stats">
+        <view class="stat-item">
+          <text class="stat-value">{{(selectedHeatmap && selectedHeatmap.totalCompleted) || 0}}</text>
+          <text class="stat-label">总完成</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{(selectedHeatmap && selectedHeatmap.activeDays) || 0}}</text>
+          <text class="stat-label">活跃天数</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-value">{{(selectedHeatmap && selectedHeatmap.maxCount) || 0}}</text>
+          <text class="stat-label">单日最多</text>
+        </view>
+      </view>
+
+      <view class="heatmap-actions">
+        <view class="action-btn delete-btn" bindtap="onDeleteFriend">
+          <text class="action-icon">🗑️</text>
+          <text class="action-text">删除好友</text>
+        </view>
+      </view>
+
+      <view class="heatmap-calendar">
+        <view class="calendar-header">
+          <text class="calendar-month">{{currentMonth}}</text>
+          <view class="calendar-arrows">
+            <text class="arrow-btn" catchtap="onPrevMonth">←</text>
+            <text class="arrow-btn" catchtap="onNextMonth">→</text>
+          </view>
+        </view>
+        <view class="calendar-grid">
+          <view wx:for="{{heatmapDays}}" wx:key="index" class="calendar-day {{item.count > 0 ? 'has-data' : ''}} intensity-{{item.intensity}}">
+            <text class="day-weekday">{{getWeekdayName(item.weekday)}}</text>
+            <text class="day-date">{{item.day}}</text>
+            <text class="day-count">{{item.count > 0 ? item.count : ''}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="heatmap-legend">
+        <view class="legend-item">
+          <view class="legend-color intensity-0"></view>
+          <text class="legend-text">0</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color intensity-1"></view>
+          <text class="legend-text">1-2</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color intensity-2"></view>
+          <text class="legend-text">3-4</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color intensity-3"></view>
+          <text class="legend-text">5-6</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color intensity-4"></view>
+          <text class="legend-text">7+</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加好友弹窗 -->
+  <view wx:if="{{showAddFriendModal}}" class="add-friend-modal" bindtap="onCloseAddFriend">
+    <view class="add-friend-content">
+      <view class="add-friend-header">
+        <text class="add-friend-title">添加好友</text>
+        <view class="add-friend-close" bindtap="onCloseAddFriend">✕</view>
+      </view>
+      
+      <view class="add-friend-search">
+        <view class="search-inner">
+          <text class="search-icon-text">🔍</text>
+          <input
+            class="search-input"
+            placeholder="输入用户名或邮箱搜索..."
+            placeholder-class="search-placeholder"
+            value="{{searchKeyword}}"
+            bindinput="onSearchInput"
+            focus="{{true}}"
+          />
+          <view
+            class="search-clear {{searchKeyword ? 'show' : ''}}"
+            bindtap="onSearchClear"
+          >✕</view>
+        </view>
+      </view>
+      
+      <view class="add-friend-results">
+        <view wx:if="{{searchKeyword && searchResults.length === 0}}" class="empty-results">
+          <text class="empty-text">未找到用户</text>
+        </view>
+        
+        <view wx:elif="{{searchKeyword && searchResults.length > 0}}" class="user-list">
+          <view wx:for="{{searchResults}}" wx:key="id" class="user-item" bindtap="onTapUser" data-user="{{item}}">
+            <view class="user-info">
+              <view class="user-header">
+                <view class="user-avatar">
+                  <image wx:if="{{item.avatar && item.avatar !== '' && item.avatar !== null}}" class="avatar-image" src="{{item.avatar}}" mode="aspectFill" />
+                  <text wx:else class="avatar-icon">👤</text>
+                </view>
+                <view class="user-details">
+                  <view class="user-name">{{item.username}}</view>
+                  <view class="user-meta">
+                    <text class="user-level">Lv.{{item.level}}</text>
+                    <text class="user-points">积分: {{item.points}}</text>
+                  </view>
+                </view>
+              </view>
+              <view class="user-action">
+                <text wx:if="{{item.isFriend}}" class="friend-tag">好友</text>
+                <text wx:else class="add-btn">添加</text>
+              </view>
+            </view>
+            <view class="user-email">{{item.email}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部添加按钮 -->
+  <view class="add-friend-btn" bindtap="onAddFriend">
+    <text class="add-icon">+</text>
+    <text class="add-text">添加好友</text>
+  </view>
+
+  <!-- 发布任务弹窗 -->
+  <view wx:if="{{showPostTaskModal}}" class="modal-overlay" bindtap="onClosePostTask">
+    <view class="post-task-modal" catchtap>
+      <view class="post-task-header">
+        <text class="post-task-title">发布任务给 {{selectedFriend.username || selectedFriend.name}}</text>
+        <view class="post-task-close" bindtap="onClosePostTask">✕</view>
+      </view>
+      
+      <view class="post-task-content">
+        <view class="form-group">
+          <text class="form-label">任务标题 <text class="required">*</text></text>
+          <input
+            class="form-input {{formError ? 'error' : ''}}"
+            placeholder="输入任务标题（最多 50 字）"
+            placeholder-class="input-placeholder"
+            value="{{taskFormData.title}}"
+            maxlength="50"
+            bindinput="onTaskTitleInput"
+            focus="{{showPostTaskModal}}"
+            auto-height
+          />
+          <view wx:if="{{formError}}" class="form-error">⚠️ {{formError}}</view>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">任务描述（选填）</text>
+          <textarea
+            class="form-textarea"
+            placeholder="补充说明..."
+            placeholder-class="input-placeholder"
+            value="{{taskFormData.desc}}"
+            maxlength="200"
+            bindinput="onTaskDescInput"
+            auto-height
+          />
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">截至时间（选填）</text>
+          <view class="deadline-selector">
+            <view class="deadline-input" bindtap="showTaskDeadlinePicker">
+              <text class="deadline-icon">⏰</text>
+              <text class="deadline-text">{{taskFormData.deadline ? taskFormattedDeadline : '点击选择时间'}}</text>
+            </view>
+            <view
+              wx:if="{{taskFormData.deadline}}"
+              class="deadline-clear"
+              bindtap="onClearTaskDeadline"
+            >
+              <text>✕</text>
+            </view>
+          </view>
+        </view>
+
+        <view wx:if="{{showTaskCustomPicker}}" class="custom-picker-modal">
+          <view class="custom-picker-container">
+            <view class="custom-picker-header">
+              <text class="custom-picker-title">选择截至时间</text>
+              <view class="custom-picker-actions">
+                <text class="custom-picker-btn cancel" bindtap="cancelTaskDeadlinePicker">取消</text>
+                <text class="custom-picker-btn confirm" bindtap="confirmTaskDeadlinePicker">确认</text>
+              </view>
+            </view>
+            <view class="custom-picker-content">
+              <view class="picker-section">
+                <text class="section-title">日期</text>
+                <view class="date-picker-grid">
+                  <view class="picker-column">
+                    <text wx:for="{{years}}" wx:key="year" 
+                      class="picker-item {{taskSelectedYear === item ? 'active' : ''}}"
+                      bindtap="selectTaskYear" data-year="{{item}}"
+                    >{{item}}</text>
+                  </view>
+                  <view class="picker-column">
+                    <text wx:for="{{months}}" wx:key="month" 
+                      class="picker-item {{taskSelectedMonth === item ? 'active' : ''}}"
+                      bindtap="selectTaskMonth" data-month="{{item}}"
+                    >{{item}}月</text>
+                  </view>
+                  <view class="picker-column">
+                    <text wx:for="{{days}}" wx:key="day" 
+                      class="picker-item {{taskSelectedDay === item ? 'active' : ''}}"
+                      bindtap="selectTaskDay" data-day="{{item}}"
+                    >{{item}}日</text>
+                  </view>
+                </view>
+              </view>
+              <view class="picker-section">
+                <text class="section-title">时间</text>
+                <view class="time-picker-grid">
+                  <view class="picker-column">
+                    <text wx:for="{{hours}}" wx:key="hour" 
+                      class="picker-item {{taskSelectedHour === item ? 'active' : ''}}"
+                      bindtap="selectTaskHour" data-hour="{{item}}"
+                    >{{item < 10 ? '0' + item : item}}</text>
+                  </view>
+                  <view class="picker-column separator">
+                    <text class="separator-text">:</text>
+                  </view>
+                  <view class="picker-column">
+                    <text wx:for="{{minutes}}" wx:key="minute" 
+                      class="picker-item {{taskSelectedMinute === item ? 'active' : ''}}"
+                      bindtap="selectTaskMinute" data-minute="{{item}}"
+                    >{{item < 10 ? '0' + item : item}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="post-task-footer">
+        <view class="btn-cancel" bindtap="onClosePostTask">取消</view>
+        <view class="btn-submit" bindtap="onSubmitPostTask">发布任务</view>
+      </view>
+    </view>
+  </view>
+</view>

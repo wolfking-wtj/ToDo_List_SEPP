@@ -1,0 +1,53 @@
+<!-- pages/add-friend/add-friend.wxml -->
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-inner">
+      <text class="search-icon-text">🔍</text>
+      <input
+        class="search-input"
+        placeholder="输入用户名或邮箱搜索..."
+        placeholder-class="search-placeholder"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+      />
+      <view class="search-clear" bindtap="onClose">✕</view>
+    </view>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view wx:if="{{showResults}}" class="search-results">
+    <view wx:if="{{loading}}" class="loading">
+      <text class="loading-text">搜索中...</text>
+    </view>
+    
+    <view wx:elif="{{searchResults.length === 0}}" class="empty">
+      <text class="empty-text">未找到用户</text>
+    </view>
+    
+    <view wx:else class="user-list">
+      <view wx:for="{{searchResults}}" wx:key="id" class="user-item" bindtap="onTapUser" data-user="{{item}}">
+        <view class="user-info">
+          <view class="user-header">
+            <view class="user-avatar">
+              <image wx:if="{{item.avatar && item.avatar !== '' && item.avatar !== null}}" class="avatar-image" src="{{item.avatar}}" mode="aspectFill" />
+              <text wx:else class="avatar-icon">👤</text>
+            </view>
+            <view class="user-details">
+              <view class="user-name">{{item.username}}</view>
+              <view class="user-meta">
+                <text class="user-level">Lv.{{item.level}}</text>
+                <text class="user-points">积分: {{item.points}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="user-action">
+            <text wx:if="{{item.isFriend}}" class="friend-tag">好友</text>
+            <text wx:else class="add-btn">添加</text>
+          </view>
+        </view>
+        <view class="user-email">{{item.email}}</view>
+      </view>
+    </view>
+  </view>
+</view>
